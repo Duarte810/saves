@@ -1,0 +1,85 @@
+TS
+import { Component, OnInit } from '@angular/core';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonInput, IonLabel } from '@ionic/angular/standalone';
+import { NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton, NgIf, IonInput, IonLabel, FormsModule],
+})
+export class HomePage implements OnInit {
+  points: number = 0;
+  numero: number = 0;
+  temporizador: any;
+  rankingLocalStorage: any = '';
+
+  rankingExibido: boolean = false;
+
+  ranking: any = [];
+
+  name: string = '';
+
+  status: boolean = true;
+  constructor() {}
+
+  ngOnInit(): void { 
+    this.iniciar() 
+    if(localStorage.length != 0){
+      this.rankingLocalStorage = localStorage.getItem("ranking")
+      this.ranking = JSON.parse(this.rankingLocalStorage);
+      console.log(this.ranking);
+    }
+  }
+
+  somar(){ this.points += 1; }
+
+  iniciar(){ this.temporizador = setInterval(()=>{ this.numero += 1; if(this.numero >= 10){ this.status = false; this.parar() } }, 1000) }
+
+  parar(){ clearInterval(this.temporizador); this.numero = 0; }
+
+  inserirDados(){
+    this.ranking.push(
+      {
+        name: this.name,
+        points: this.points,
+      }
+    );
+    this.ranking = JSON.stringify(this.ranking);
+    localStorage.setItem("ranking", this.ranking);
+
+    console.log(this.ranking);
+  }
+
+  mostrarRanking(){
+
+  }
+}
+
+HTML
+<ion-content [fullscreen]="true">
+  <body>
+    
+    <div *ngIf="!status">
+        <ion-label>Insert your nick</ion-label>
+        <ion-input [(ngModel)]="name" type="text"></ion-input>
+        <ion-button (click)="inserirDados()" color="translucent" type="submit">Save hi score</ion-button>
+    </div>
+
+
+    <h1>Click the rider the fastest you can!</h1>
+    <div id="W" (click)="somar()"></div>
+    <p>Points: {{ points }} || Time: {{ numero }}</p>
+
+    <ion-button color="translucent" click="mostrarRanking()">
+      <p class="ranking">Ranking</p>
+    </ion-button>
+
+    <ion-button color="translucent" (click)="parar()">
+      <p class="stop">Stop</p>
+    </ion-button>
+  </body>
+</ion-content>
