@@ -1,7 +1,38 @@
-TS
+<ion-content [fullscreen]="true">
+  <body>
+    
+    <div *ngIf="!status">
+        <ion-label>Insert your nick</ion-label>
+        <ion-input [(ngModel)]="name" type="text"></ion-input>
+        <ion-button (click)="inserirDados()" color="translucent" type="submit">Save hi score</ion-button>
+    </div>
+
+    <div *ngIf="rankingExibido" id="List_ranking">
+      <h1>Ranking!</h1>
+      <li *ngFor="let item of rankingOrganizado">
+        <ul>{{ranking.indexOf(item)+1}} - {{ item.name }} {{ item.points }} & {{ item.numero }}</ul>
+      </li>
+    </div>
+
+    <h1 *ngIf="status">Click the rider the fastest you can!</h1>
+    <div *ngIf="status" id="W" (click)="somar()"></div>
+    <p>Points: {{ points }} || Time: {{ numero }}</p>
+
+    <ion-button color="translucent" (click)="mostrarRanking()">
+      <p class="ranking">Ranking</p>
+    </ion-button>
+
+    <ion-button *ngIf="status" color="translucent" (click)="parar()">
+      <p class="stop">Stop</p>
+    </ion-button>
+  </body>
+
+</ion-content>
+
+ts
 import { Component, OnInit } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonInput, IonLabel } from '@ionic/angular/standalone';
-import { NgIf } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 
@@ -9,7 +40,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton, NgIf, IonInput, IonLabel, FormsModule],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton, NgIf, IonInput, IonLabel, FormsModule, NgFor],
 })
 export class HomePage implements OnInit {
   points: number = 0;
@@ -20,6 +51,8 @@ export class HomePage implements OnInit {
   rankingExibido: boolean = false;
 
   ranking: any = [];
+  rankingOrganizado: any = [];
+
 
   name: string = '';
 
@@ -55,31 +88,94 @@ export class HomePage implements OnInit {
   }
 
   mostrarRanking(){
-
+    this.rankingExibido = !this.rankingExibido;
+    this.ranking = this.ranking.sort(function (a: any, b: any) {
+      if (a.pontos < b.pontos) {
+        return 1;
+      }
+      if (a.pontos > b.pontos) {
+        return -1;
+      }
+      return 0;
+    });
+    if(this.ranking.length < 10){
+      for (let i = 0; i < this.ranking.length; i++) {
+        this.rankingOrganizado[i] = this.ranking[i];      
+      }
+    }else{
+      for (let i = 0; i < 10; i++) {
+        this.rankingOrganizado[i] = this.ranking[i];      
+      }
+    }
   }
+
+
+css
+h1{
+  color: white;
+  font-size: large;
+  text-align: center;
 }
 
-HTML
-<ion-content [fullscreen]="true">
-  <body>
-    
-    <div *ngIf="!status">
-        <ion-label>Insert your nick</ion-label>
-        <ion-input [(ngModel)]="name" type="text"></ion-input>
-        <ion-button (click)="inserirDados()" color="translucent" type="submit">Save hi score</ion-button>
-    </div>
+body{
+   background-image: url(https://divnil.com/wallpaper/iphone5/img/app/k/a/kamen_rider_w_cyclonejoker_iphone_wallpaper_by_scarlet_mangekyo-d60lemc_43a393026462f9e4c833903e6bcb700c_raw.jpg);
+   background-size: cover ;
+   background-repeat: no-repeat;
+   height: 100vh;
+}
 
+div{
+  margin-top: 10vh;
+}
 
-    <h1>Click the rider the fastest you can!</h1>
-    <div id="W" (click)="somar()"></div>
-    <p>Points: {{ points }} || Time: {{ numero }}</p>
+ion-title{
+  color: purple;
+}
 
-    <ion-button color="translucent" click="mostrarRanking()">
-      <p class="ranking">Ranking</p>
-    </ion-button>
+.ranking{
+  text-align: center;
+  color: white;
+}
 
-    <ion-button color="translucent" (click)="parar()">
-      <p class="stop">Stop</p>
-    </ion-button>
-  </body>
-</ion-content>
+.stop{
+  text-align: center;
+  color: white;
+}
+
+p{
+  text-align: center;
+  color: rgb(255, 255, 255);
+}
+
+ion-button{
+  display: flex;
+  align-items: center;
+}
+
+#W{
+  width: 225px;
+  height: 225px;
+  background-image: url(https://cdn.shopify.com/s/files/1/2786/5582/products/81pgZ6rDodL._AC_SL1500__clipped_rev_1_clipped_rev_1_300x300.png?v=1660246313);
+  margin-left: auto;
+  margin-right: auto; 
+  border-radius: 360px;
+}
+
+ion-label{
+  color: white;
+  display: flex;
+  justify-content: center;
+}
+
+ion-input{
+  color: white;
+  text-align: center;
+}
+
+#List_ranking{
+  background-image: url(https://i.redd.it/xl9hsuk5anvb1.jpg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: white;
+}
+}
